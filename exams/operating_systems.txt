@@ -1,0 +1,817 @@
+[question]
+Ile powstanie sierot w wyniku dzialania kodu:
+
+fork(); if ( fork() ) wait( NULL );
+
+[ans*]
+co najwyzej jedna sierota
+[ans]
+dwie
+[ans]
+zero
+[ans]
+trzy
+
+[question]
+Ile co najwyzej sierot moze powstac w wyniku dzialania nastepujacego kodu?
+
+fork(); fork(); if (fork()) wait(NULL);
+
+[ans*]
+0
+[ans]
+1
+[ans]
+2
+[ans]
+3
+
+[question]
+Ktory algorytm poprawnie implementuje wzajemne wykluczanie za pomoca niepodzielnej operacji zamiany wartosci zmiennych (exch)? Zakladamy, ze zmienna jest wspoldzielona, zainicjowana na 0, natomiast b jest lokalna w kazdym z tych procesow; SK oznacza sekcje krytyczna.
+[ans]
+b:=1; repeat exch(a,b) until b=1; SK; a:=0
+[ans*]
+b:=1; repeat exch(a,b) until b=0; SK; a:=0
+[ans]
+b:=1; repeat exch(a,b) until b=0; SK; b:=0
+[ans]
+b:=0; repeat exch(a,b) until b=0; SK; a:=0
+
+[question]
+Ktory algorytm poprawnie implementuje wzajemne wykluczanie za pomoca niepodzielnej operacji test-and-set (ts)? Zakladamy, ze zmienna a jest wspoldzielona; SK oznacza sekcje krytyczna.
+[ans]
+while ts(a)=1 do; SK; a:=1
+[ans]
+while ts(a)=1 do a:=0; SK; a:=0
+[ans*]
+while ts(a)=1 do; SK; a:=0
+[ans]
+while ts(a)=1 do a:=1; SK; a:=1
+
+[question]
+Dwa procesy wspolbiezne komunikuja sie przez bufor o ograniczonej pojemnosci. Jeden z nich jest producentem, drugi --- konsumentem. Dostep do bufora procesy przeprowadzaja wedlug algorytmow, wykorzystujacych semafory a, b, w. Producent wykonuje po kolei: P(a); P(w); wlozenie bajtu do bufora; V(w); V(b). Jak powinien wygladac poprawny kod konsumenta ("pbzb" oznacza pobranie bajtu z bufora)?
+[ans]
+P(a); P(w); pbzb; V(w); V(b)
+[ans]
+P(w); P(b); pbzb; V(a); V(w)
+[ans]
+P(w); P(a); pbzb; V(w); V(b)
+[ans*]
+P(b); P(w); pbzb; V(a); V(w)
+
+[question]
+Dwa procesy wspolbiezne komunikuja sie przez bufor o pojemnosci 1024 bajtow. Jeden z nich jest producentem, drugi --- konsumentem. Dostep do bufora procesy przeprowadzaja wedlug algorytmow, wykorzystujacych semafory a, b, w. W szczegolnosci kod producenta ma postac: P(a); P(w); wlozenie bajtu do bufora; V(w); V(b). Jakie wartosci poczatkowe nalezy nadac semaforom?
+[ans*]
+a = 1024, b = 0, w = 1
+[ans]
+a = 0, b = 1024, w = 1
+[ans]
+a = 0, b = 0, w = 1024
+[ans]
+a = 1024, b = 1, w = 0
+
+[question]
+Procesy Pi (i = 1, ..., N) wykonuja w nieskonczonych petlach swoja tresc, czyli sa postaci:
+process Pi: for ki := 1 to \infty do { (*); Ci (**) }
+Dodatkowo mamy tablice semaforow liczbowych s[i, j] o rozmiarze N × N, ktorym nadano poczatkowo wartosc d. Ktore fragmenty mozna wstawic w miejsca (*)/(**), by w dowolnej chwili spelniony byl warunek \forall i, j = 1, ..., N : |ki - kj| <= d + 1? Liczby N oraz d to stale. Procesy znaja swoje numery i.
+[ans*]
+(*) for j := 1 to N do P(s[i, j]), (**) for j := 1 to N do V(s[j, i])
+[ans]
+(*) for j := 1 to N do P(s[i, j]), (**) for j := 1 to N do V(s[i, j])
+[ans]
+(*) for j := 1 to N do P(s[i, i]), (**) for j := 1 to N do V(s[j, i])
+[ans]
+(*) for j := 1 to N do P(s[i, j]), (**) for j := 1 to N do V(s[j, j])
+
+[question]
+W ktorym ze stanow znajduje sie proces, ktory wykonal na semaforze operacje P, lecz nie wszedl do strefy krytycznej, gdyz ta jest akurat zajeta przez inny proces?
+[ans*]
+oczekujacy
+[ans]
+wstrzymany
+[ans]
+gotowy
+[ans]
+wykonywany
+
+[question]
+W ktorym ze stanow znajduje sie proces, ktory wykonal (w monitorze) operacje delay?
+[ans*]
+oczekujacy
+[ans]
+wstrzymany
+[ans]
+gotowy
+[ans]
+wykonywany
+
+[question]
+Ponizszy monitor sluzy do synchronizacji czytelnikow i pisarzy:
+
+monitor CP; var lc, lp: int:=0; qc, qp: queue;
+entry PoczPis: if lc>0 or lp>0 then delay(qp); lp:=1
+entry KonPis: lp:=0; if not empty(qc) then continue(qc) else if not empty(qp) then continue(qp)
+entry PoczCzyt: if lp>0 then delay(qc); ++lc; if not empty(qc) then continue(qc)
+entry KonCzyt: --lc; if not empty(qp) then continue(qp)
+
+Istnieje scenariusz, przy ktorym:
+[ans*]
+dwoch pisarzy naraz uzyska dostep do bazy danych
+[ans]
+nastapi zakleszczenie
+[ans]
+nastapi zaglodzenie czytelnikow
+[ans]
+nastapki zaglodzenie pisarzy
+
+[question]
+Ponizszy monitor sluzy do synchronizacji czytelnikow i pisarzy:
+
+monitor CP; var lc, lp: int:=0; qc, qp: queue;
+entry PoczPis: if lc>0 or lp>0 then delay(qp); lp:=1
+entry KonPis: lp:=0; if not empty(qc) then continue(qc) else if not empty(qp) then continue(qp)
+entry PoczCzyt: if lp>0 then delay(qc); ++lc; if not empty(qc) then continue(qc)
+entry KonCzyt: --lc; if lc=0 and not empty(qp) then continue(qp)
+
+Istnieje scenariusz, przy ktorym:
+[ans]
+dwoch pisarzy naraz uzyska dostep do bazy danych
+[ans]
+nastapi zakleszczenie
+[ans]
+nastapi zaglodzenie czytelnikow
+[ans*]
+nastapi zaglodzenie pisarzy
+
+[question]
+Dwa procesy korzystaja z dwoch semaforow binarnych: s1 i s2. Poczatkowo s1 jest otwarty, zas s2 --- zamkniety. Kod procesow:
+
+process P1: while true do { P( s1 ); V( s2 ); V( s2 ) },
+process P2: while true do { P( s2 ); P( s2 ); V( s1 ) }.
+
+W kodzie tym:
+[ans*]
+moze (lecz nie musi) dojsc do zakleszczenia
+[ans]
+na pewno dojdzie do zakleszczenia
+[ans]
+na pewno nie dojdzie do zakleszczenia
+[ans]
+kod jest niepoprawny
+
+
+[question]
+Semafor liczbowy (nieograniczony) s mial wartosc 10. Pozniej wykonywano na nim operacje P i V; w sumie 13 razy wykonano P(s) i 5 razy V(s). Wartosc semafora po tych operacjach to:
+[ans*]
+2
+[ans]
+18
+[ans]
+5
+[ans]
+tego nie mozna ustalic nie znajac konkretnej kolejnosci wykonywania P i V
+
+[question]
+Semafor liczbowy (nieograniczony) s mial wartosc 5. Pozniej wykonywano na nim operacje P i V; w sumie 8 razy wykonano P(s) i 13 razy V(s). Wartosc semafora po tych operacjach to:
+[ans]
+2
+[ans*]
+10
+[ans]
+5
+[ans]
+tego nie mozna ustalic nie znajac konkretnej kolejnosci wykonywania P i V
+
+[question]
+Rozwazmy dwa procesy, P1 i P2. Semafor binarny A jest poczatkowo otwarty, zas B --- zamkniety.
+Przez Nx oznaczmy liczbe wykonao operacji X, przez Ny --- liczbe wykonan operacji Y. Kod procesow:
+
+process P1: while true do { P(A); X; V(B) },
+process P2: while true do { P(B); Y; V(A) }.
+
+Wskazac najsilniejszy warunek zachodzacy w dowolnej chwili:
+[ans]
+Nx + 1 >= Ny >= Nx
+[ans]
+Ny + 2 >= Ny >= Nx
+[ans]
+Nx + 2 >= Ny >= Nx
+[ans*]
+Ny + 1 >= Nx >= Ny
+
+[question]
+Mamy trzy semafory liczbowe (nieograniczone): s1, s2 i s3, zainicjowane na 1. Rozwazamy trzy procesy.
+Przez nX, nY i nZ oznaczamy liczbe wykonan odpowiednich operacji. Kod procesow:
+
+process P1: while true do { P(s1); X; V(s2); V(s3) },
+process P2: while true do { P(s2); Y; V(s1); V(s3) },
+process P3: while true do { P(s3); Z; V(s2); V(s1) }.
+
+Wskazac najsilniejszy warunek zachodzacy w dowolnej chwili:
+[ans]
+nX <= nY + nZ
+[ans*]
+nX <= nY + nZ + 1
+[ans]
+nX <= nY + nZ - 1
+[ans]
+nX <= nY + nZ + 2
+
+[question]
+W problemie czytelnikow i pisarzy:
+[ans]
+niezaleznie od rozkladu priorytetow na pewno nie dojdzie do zaglodzenia czytelnikow ani pisarzy
+[ans]
+na pewno nie dojdzie do zaglodzenia czytelnikow, natomiast w zaleznosci od rozkladu priorytetow moze dojsc do zaglodzenia pisarzy
+[ans*]
+w zaleznosci od rozkladu priorytetow moze dojsc do zaglodzenia czytelnikow i pisarzy
+[ans]
+dla kazdego mozliwego rozkladu priorytetow moze dojsc do zaglodzenia ktoregos z typow proceso
+
+[question]
+Rozwazmy nastepujace taski w Adzie:
+
+task T1: semafor.P; X; semafor.V,
+task T2: semafor.V; Y; semafor.P,
+task T3: semafor.P; Z; semafor.P,
+task T4: semafor.V; A; semafor.V.
+
+Zakladamy, ze w procesie jest task semafor i jeden task ze zbioru X \in {T1, T2, T3, T4}.
+Wskazac maksymalny zbior X gwarantujacy zakleszczenie:
+[ans]
+{T1, T2, T3}
+[ans*]
+{T2, T3, T4}
+[ans]
+{T2, T3}
+[ans]
+{T3, T4}
+
+[question]
+Ktory fragment kodu w Adzie jest na pewno niepoprawny?
+[ans*]
+when x > y => accept p(x: in integer) do y:=x end
+[ans]
+when y > 0 => accept p(x: in integer) do y:=x end
+[ans]
+when z > 0 => accept p(x: in integer) do y:=x end
+[ans]
+when y > z => accept p(x: in integer) do y:=x end
+
+[question]
+Ktory fragment kody w Adzie moze byc w odpowiednim kontekscie poprawny?
+[ans]
+accept p(x: in integer); accept p(y: out integer) do y:=x end
+[ans]
+accept p(x: in integer); accept p(y: out integer) do x:=y end
+[ans*]
+accept p(x: in integer) do z:=x end; accept p(y: out integer) do y:=z end
+[ans]
+accept p(x: in integer) do z:=x end; accept p(y: out integer) do z:=y end
+
+[question]
+W pewnym systemie z pamiecia wirtualna prawdopodobienstwo odwolania do strony niepoprawnej wynosi 3 x 10^-7, sredni czas dostepu do pamieci RAM to 50 ns, a sredni czas obslugi braku strony to 50 ms. Ile wynosi spowolnienie dostepu do pamieci spowodowane zastosowaniem pamieci wirtualnej?
+[ans*]
+30%
+[ans]
+0,7%
+[ans]
+15%
+
+[question]
+System pamieci wirtualnej z wymiana na zadanie stosuje algorytm FIFO (First In First Out). System dysponuje czterema ramkami, ktore poczatkowo sa puste. Ktora strona zostanie usunieta przy ostatnim odwolaniu, jesli ciag odwolan do stron przedstawia sie tak: 1, 2, 3, 4, 1, 4, 3, 4, 5?
+[ans*]
+1
+[ans]
+2
+[ans]
+3
+[ans]
+4
+
+[question]
+System pamieci wirtualnej z wymiana na zadanie stosuje algorytm LRU (Least Recently Used). System dysponuje czterema ramkami, ktore poczatkowo sa puste. Ktora strona zostanie usunieta przy ostatnim odwolaniu, jesli ciag odwolan do stron przedstawia sie tak: 1, 2, 3, 4, 1, 4, 3, 4, 5?
+[ans]
+1
+[ans*]
+2
+[ans]
+3
+[ans]
+4
+
+
+[question]
+System pamieci wirtualnej z wymiana na zadanie stosuje algorytm LFU (Least Frequently Used). System dysponuje czterema ramkami, ktore poczatkowo sa puste. Ktora strona zostanie usunieta przy ostatnim odwolaniu, jesli ciag odwolan do stron przedstawia sie tak: 1, 2, 3, 4, 1, 4, 3, 4, 5?
+[ans]
+1
+[ans*]
+2
+[ans]
+3
+[ans]
+4
+
+[question]
+System pamieci wirtualnej z wymiana na zadanie stosuje algorytm MFU (Most Frequently Used). System dysponuje czterema ramkami, ktore poczatkowo sa puste. Ktora strona zostanie usunieta przy ostatnim odwolaniu, jesli ciag odwolan do stron przedstawia sie tak: 1, 2, 3, 4, 1, 4, 3, 4, 5?
+[ans]
+1
+[ans]
+2
+[ans]
+3
+[ans*]
+4
+
+[question]
+Rozwazmy dwa wspolbiezne procesy. Zmienna x jest wspoldzielona poczatkowo rowna 0, natomiast y jest lokalna w kazdym z procesow. Kod procesow:
+
+process P1: y:=x; y:=y+1; x:=y
+process P2: y:=x; y:=y+2; x:=y
+
+Podac maksymalny zbior wartosci, jakie zmienna x moze osiagnac w wyniku roznych przeplotow.
+[ans*]
+{1, 2, 3}
+[ans]
+{0, 1, 2, 3}
+[ans]
+{1, 2}
+[ans]
+{0, 3}
+
+
+[question]
+Ktore z przejsc miedzy stanami (nowy, gotowy, wykonywany, oczekujacy, zakonczony) odpowiada zakonczeniu drukowania?
+[ans]
+gotowy > oczekujacy
+[ans*]
+wykonywany > oczekujacy
+[ans]
+oczekujacy > wykonywnay
+[ans]
+oczekujacy > gotowy
+[ans]
+wykonywany > gotowy
+
+[question]
+Ktory zasob nie jest wspoldzielony przez watki w ramach procesu?
+[ans*]
+stos
+[ans]
+segment kodu
+[ans]
+otwarte pliki
+[ans]
+segment danych
+
+[question]
+Zalozmy, ze posiadamy prawo x do (wlasnego) pliku abc. Ktore polecenie zabierze nam to prawo?
+[ans*]
+chmod u=r abc
+[ans]
+chmod 0544 abc
+[ans]
+chmod u+r abc
+[ans]
+chmod 0111 abc
+
+[question]
+Ktora z funkcji systemowych Unixa nie jest potrzebna do korzystania z potoku?
+[ans]
+pipe
+[ans*]
+fork
+[ans]
+read
+[ans]
+write
+
+
+[question]
+Ile powstanie lacznie procesow wskutek uruchomienia ponizszego programu?
+
+main() { int i; for (i = 0; i < 5; ++i) if (fork() < 0) exit(0); }
+[ans*]
+2^5
+
+
+[question]
+Ktora funkcja nigdy nie zwraca wartosci -1?
+[ans]
+fork
+[ans]
+exec
+[ans]
+close
+[ans*]
+exit
+
+
+[question]
+Co nalezy wstawic w przytoczonym fragmencie kodu w miejsce trzech kropek, by spowodowac przekierowanie standardowego wejscia na plik?
+
+fd = open("plik", 0700); close(0); ..., close(fd);
+[ans*]
+dup(fd);
+
+[question]
+W katalogu domowym uzytkownika znajduje sie plik moj.txt; uzytkownik ma prawo czytania go.
+Ponizszy kod:
+
+char buf[NN]; int fd; close(0); fd=open("moj.txt", O_RDWR); dup(fd); read(0, buf, NN);
+[ans*]
+spowoduje blad wykonania
+[ans]
+zapisze dane z bufora do pliku
+[ans]
+przeczyta dane z pliku moj.txt do bufora
+[ans]
+poprosi uzytkownika o podanie danych i wpisze je do bufora
+
+[question]
+W nastepujacym kodzie:
+
+if (!fork()) while(1) sleep(1); else exit(0);
+[ans*]
+na pewno pojawi sie sierota
+[ans]
+na pewno nie pojawi sie ani sierota, ani zombie
+[ans]
+na pewno pojawi sie zombie
+[ans]
+kod jest niepoprawny
+
+[question]
+W ktorym ze stanow (nowy, gotowy, wykonywany, oczekujacy, zakonczony) znajduje sie proces, ktory wlasnie zglosil zapotrzebowanie na drukarke?
+[ans*]
+oczekujacy
+[ans]
+nowy
+[ans]
+wykonywany
+[ans]
+gotowy
+
+[question]
+W biezacym katalogu znajduje sie plik o nazwie a. W konsoli wpisano polecenie `cat a` (wazne sa odwrocone apostrofy). Czego mozna sie spodziewac?
+[ans*]
+nie mozna powiedziec bez znajomosci zawartosci pliku a
+[ans]
+otrzymamy zawsze komunikat o bledzie
+[ans]
+wypisana zostanie zawartosc pliku a
+[ans]
+bedzie to instrukcja pusta
+
+
+[question]
+Zalozmy, ze w kartotece biezacej widoczny jest tylko jeden plik o nazwie abc. Ile fizycznych plikow bedzie widocznych w tymze katalogu po wykonaniu po danego nizej ciagu polecen?
+
+cp abc def; ln def ghi; cp ghi jkl; ln jkl mno;
+
+[ans]
+3
+[ans]
+5
+[ans]
+4
+[ans*]
+2
+
+[question]
+Rozwazmy nastepujacy kod. Zakladamy, ze wszystkie operacje fork i exec wykonaja sie poprawnie.
+
+if (fork()) if (fork()) execlp("ps", "ps", NULL); execlp("ps", "ps", NULL);
+
+Ile razy wykona sie program ps?
+[ans]
+3
+[ans*]
+4
+[ans]
+2
+[ans]
+1
+
+[question]
+Zalozmy, ze w kodzie pewnego procesu znajduje sie nastepujaca linijka:
+
+if ( fork() || !fork() ) fork();
+
+Zalozmy ponadto, ze wszystkie forki wykonaja sie poprawnie i ze warunek logiczny obliczany jest leniwie (nie obliczamy prawego skladnika gdy nie jest to konieczne). Ile nowych procesow zostanie utworzonych (nie liczymy procesu wspomnianego wyzej)?
+[ans]
+5
+[ans]
+3
+[ans*]
+4
+[ans]
+6
+
+[question]
+Ktore z przejsc miedzy stanami (nowy, gotowy, wykonywany, oczekujacy, zakonczony) odpowiada zgloszeniu przez proces zapotrzebowania na drukarke?
+[ans]
+gotowy > oczekujacy
+[ans]
+oczekujacy > wykonywany
+[ans]
+wykonywany > gotowy
+[ans*]
+wykonywany > oczekujacy
+
+
+[question]
+Ktorych funkcji systemowych Unixa nalezy uzyc, by stworzyc nowy proces i zaladowac program? (Jakich polecen trzeba uzyc zeby stworzyc proces?)
+[ans]
+creat, open
+[ans*]
+fork, exec
+[ans]
+creat, exec
+[ans]
+exec, open
+
+[question]
+Wpisanie w konsoli "ps | cat plik" zakonczy sie wypisaniem:
+[ans]
+informacji o biezacych procesach
+[ans*]
+zawartosci pliku plik
+[ans]
+zawartosci pliku plik i informacji o biezacych procesach
+[ans]
+informacji o bledzie
+
+[question]
+Ktora z funkcji systemowych Unixa nie jest potrzebna do korzystania z potoku nazwanego (fifo)?
+[ans]
+write
+[ans*]
+pipe
+[ans]
+read
+[ans]
+open
+
+
+[question]
+Ktora funkcja systemowa Unixa nie odnosi sie do zarzadzania procesami?
+[ans]
+fork
+[ans]
+wait
+[ans*]
+dup
+[ans]
+exec
+
+
+[question]
+Ktora z funkcji systemowych Unixa nie jest potrzebna do korzystania z potoku nienazwanego (pipe)?
+[ans*]
+open
+[ans]
+read
+[ans]
+pipe
+[ans]
+write
+
+
+[question]
+Ktore z przejsc miedzy stanami (nowy, gotowy, wykonywany, oczekujacy, zakonczony) odpowiada
+wywlaszczeniu procesu przez system operacyjny?
+[ans]
+wykonywany > oczekujacy
+[ans]
+gotowy > oczekujacy
+[ans*]
+wykonywany > gotowy
+[ans]
+oczekujacy > wykonywany
+
+
+[question]
+Wybierz algorytm, ktory poprawnie implementuje operacje test&set (wzajemne wykluczanie):
+[ans]
+b:=1; repeat exch(a,b) until b=1; SK; a:=0
+[ans*]
+b:=1; repeat exch(a,b) until b=0; SK; a:=0
+[ans]
+b:=1; repeat exch(a,b) until b=0; SK; b:=0
+[ans]
+b:=0; repeat exch(a,b) until b=0; SK; a:=0
+
+[question]
+Wybierz algorytm, ktory poprawnie implementuje operacje test&set (wzajemne wykluczanie):
+[ans]
+while ts(a)=1 do; SK; a:=1
+[ans]
+while ts(a)=1 do a:=0; SK; a:=0
+[ans*]
+while ts(a)=1 do; SK; a:=0
+[ans]
+while ts(a)=1 do a:=1; SK; a:=1
+
+[question]
+Dwa procesy wspolbiezne komunikuja sie przez bufor o pojemnosci 512 bajtow. Jeden z nich jest producentem, drugi -- konsumentem. Dostep do bufora procesy przeprowadzaja wedlug algorytmow wykorzystujacych semafory a, b, w. W szczegolnosci kod producenta ma postac P(a); P(w); wlozenie bajtu do bufora; V(w); V(b). Jakie wartosci poczatkowe nalezy nadac semaforom?
+[ans*]
+a = 512, b = 0, w = 1
+[ans]
+a = 0, b = 512, w = 1
+[ans]
+a = 0, b = 0, w = 512
+[ans]
+a = 512, b = 1, w = 0
+
+
+[question]
+Ktora funkcja nie zwraca wartosci 0?
+[ans]
+fork
+[ans*]
+exec
+[ans]
+close
+[ans]
+exit
+
+
+[question]
+Ktorej funkcji nalezy uzyc aby poznac dlugosc pliku bez czytania jego zawartosci?
+[ans*]
+lseek
+
+
+[question]
+Ile destruktorow plikow tworzy funkcja pipe?
+[ans*]
+2
+[ans]
+0
+[ans]
+1
+
+
+[question]
+Ile powstanie procesow w skutek uruchomienia nastepujacego kodu:
+
+main() {
+    if (fork()) {
+        if (fork()); fork(); fork();
+    }
+}
+
+[ans]
+7
+[ans*]
+8
+
+[question]
+Ile procesow zombie wyprodukuje kod:
+
+if ( fork() ) { fork(); wait(NULL); }
+
+[ans*]
+co najwyzej 2
+
+[question]
+Dany jest skrypt: exec $0. Czym zakonczy sie skrypt? (lub exec\0)
+[ans*]
+nie zakonczy sie
+
+[question]
+Co wykona polecenie?
+
+mkfifo plik; ls>plik
+
+[ans*]
+wynik dzialania zapisze sie do pliku lub zapisze wynik dzialania ls do pliku
+
+[question]
+Ktore z przejsc pomiedzy stanami procesu odpowiadaja zakonczeniu procesu drukowania, lecz nie zezwalaja jeszcze na wykonywanie procesu?
+[ans]
+oczekujacy
+[ans]
+wstrzymany
+[ans*]
+gotowy
+[ans]
+wykonywany
+
+[question]
+Ktore z przejsc pomiedzy stanami procesu odpowiadaja brakowi programu lub kompilatora?
+[ans*]
+oczekujacy
+[ans]
+wstrzymany
+[ans]
+gotowy
+[ans]
+wykonywany
+
+[question]
+W ktorym stanie znajdzie sie proces w przypadku bledu programowego?
+[ans*]
+oczekujacy (na obsluge bledu)
+
+[question]
+Ile powstanie procesow w skutek uruchomienia nastepujacego kodu:
+
+main() {int i; for (i=0; i<5; i++) fork();
+
+[ans*]
+32 //2^5
+
+[question]
+Ile powstanie procesow w skutek uruchomienia nastepujacego kodu:
+
+main() {int i; for (i=0; i<5; ++i) if(fork==0) exit(0);}
+
+[ans*]
+6
+
+[question]
+W ponizszym programie:
+
+if (fork()) while(1) sleep(1); else exit(0);
+
+[ans*]
+pojawi sie zombie
+
+[question]
+Mamy kod: 
+
+pipe(pfd); fork(); close(pfd[0]); fork;
+pfd - tablica dwoch int, zakladamy ze fork wykona sie poprawnie.
+Ile bedzie otwartych deskryptorow dla zapisu do potoku po zakonczeniu wykonania kodu?
+[ans*]
+0
+
+[question]
+Jaka kombinacja klawiszy wykona prace pierwszoplanowa i tlo?
+[ans*]
+ctrl + z bg (uspi a nastepnie pokaze uspione procesy)
+
+[question]
+Chcemy przekierowac wyjscie na dany plik. Co nalezy wstawic w miejsce kropek?
+
+fd = open("plik", 0700); ......;
+dump(fd);
+close(fd);
+
+[ans*]
+close(fd);
+
+[question]
+Ile powstanie procesow po napisaniu na konsoli:
+
+ls -l | grep abc | wc
+
+[ans*]
+3
+
+[question]
+Jaka funkcja umozliwia synchronizacje wznowienia pracy przez proces rodzica z jednoczesnym zakonczeniem dzialania procesu dziecka?
+[ans]
+fork
+[ans]
+exec
+[ans]
+close
+[ans*]
+wait
+
+[question]
+Jest dany potok: 
+
+prog1 | prog2 ......
+co nalezy wpisac w miejsce kropek aby dane wyslane przez prog2 zostaly przeslane na wyjscie?
+
+[ans*]
+>plik //jakie wyjscie?, | cat
+
+[question]
+Ktora sekwencja nacisniec klawiszy i polecen pozwala wstrzymac, a nastepnie wznowic proces unixowy?
+[ans]
+ctrl-z, bg
+[ans]
+ctrl-c, bg
+[ans*]
+ctrl-z, fg
+[ans]
+ctrl-c, ps
+
+[question]
+Zalozmy, ze w kartotece biezacej widoczny jest tylko jeden fizyczny plik o nazwie abc. Ile fizycznych plikow bedzie widocznych w tymze katalogu po wykonaniu podanego ponizej ciagu polecen?
+
+cp abc def; ln def ghi
+
+[ans]
+1
+[ans*]
+2
+[ans]
+3
+[ans]
+nie da sie tego ustalic bez dodatkowych informacji
