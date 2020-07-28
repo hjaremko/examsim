@@ -8,7 +8,33 @@ cargo run --release -- <command line options>
 
 ## Usage
 ```
-todo
+USAGE:
+    examsim.exe [FLAGS] --file <FILE>
+
+FLAGS:
+    -h, --help       Prints help information
+    -v, --verbose    Print debug messages (debug build only)
+    -V, --version    Prints version information
+
+OPTIONS:
+    -f, --file <FILE>    Specify exam file
+```
+## Exam file structure
+```
+[question]
+Question text, one or
+more lines
+
+[ans]
+Incorrect answer
+[ans*]
+Correct answer
+[ans]
+Another incorrect answer
+
+[question]
+Another question
+...
 ```
 
 ## Downloads

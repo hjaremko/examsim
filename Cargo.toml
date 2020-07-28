@@ -1,6 +1,6 @@
 [package]
 name = "examsim"
-version = "0.0.1"
+version = "0.1.0"
 authors = ["Hubert Jaremko <hjaremko@outlook.com>"]
 edition = "2018"
 
@@ -8,5 +8,9 @@ edition = "2018"
 
 [dependencies]
 rand = "0.7"
-getch = "0.2.1"
-colour = "0.5.0"
+getch = "0.2"
+colour = "0.5"
+clap = {version = "3.0.0-beta.1", features = ["yaml"]}
+log = { version = "0.4", features = ["max_level_trace", "release_max_level_info"] }
+termcolor = "1.1"
+input-stream = "0.4"

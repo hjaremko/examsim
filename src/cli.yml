@@ -1,0 +1,17 @@
+name: examsim
+version: "0.1.0"
+author: Hubert Jaremko <hjaremko@outlook.com>
+about: Closed question exam practice
+args:
+    - file:
+        short: f
+        long: file
+        value_name: FILE
+        help: Specify exam file
+        takes_value: true
+        required: true
+    - verbose:
+        short: v
+        long: verbose
+        help: Print debug messages (debug build only)
+        takes_value: false

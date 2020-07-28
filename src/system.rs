@@ -1,10 +1,8 @@
-mod exam;
-mod interface;
-
-use crate::system::exam::Exam;
+use crate::exam::Exam;
 use crate::system::interface::Input::Message;
-use crate::system::interface::{ExamIO, Input};
-use crate::system::interface::console::ConsoleIO;
+use crate::system::interface::{ConsoleIO, ExamIO, Input};
+
+mod interface;
 
 pub struct System<IO> {
     io: IO,
@@ -12,15 +10,16 @@ pub struct System<IO> {
 }
 
 impl<IO: ExamIO> System<IO> {
-    pub fn new() -> System<IO> {
+    pub fn new(exam_engine: Exam) -> System<IO> {
         System {
             io: IO::new(),
-            exam_engine: Exam::new(),
+            exam_engine,
         }
     }
 
     pub fn run(&self) {
         let mut q = self.exam_engine.select();
+        q.shuffle_answers();
         self.io.show_question(&q);
 
         loop {
