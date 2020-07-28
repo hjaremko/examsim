@@ -22,7 +22,7 @@ impl ExamIO for ConsoleIO {
 
         match (input as char).to_digit(10) {
             Some(i) => Message(i as usize),
-            None => return Invalid,
+            None => Invalid,
         }
     }
 
