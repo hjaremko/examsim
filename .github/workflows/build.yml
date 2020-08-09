@@ -5,32 +5,82 @@ on: [push]
 jobs:
   build:
     name: Build project
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, windows-latest, macos-latest]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Cache cargo registry
-        uses: actions/cache@v1
+      - name: Cache cargo
+        uses: actions/cache@v2
         with:
-          path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-registry-
-      - name: Cache cargo index
-        uses: actions/cache@v1
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo--${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo--
+      - name: Build debug
+        if: startsWith(github.ref, 'refs/tags/v') != true
+        run: cargo build --verbose --all --all-targets
+      - name: Build release
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: cargo build --verbose --release
+      - name: Upload debug artifact
+        if: startsWith(github.ref, 'refs/tags/v') != true
+        uses: actions/upload-artifact@v2
         with:
-          path: ~/.cargo/git
-          key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-index-
-      - name: Cache cargo build
-        uses: actions/cache@v1
+          name: examsim-${{ runner.os }}
+          path: ./target/debug/examsim*
+      - name: Upload release artifact
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v2
         with:
-          path: target
-          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-build-target-
-      - name: Build
-        run: cargo build --verbose
+          name: examsim-${{ runner.os }}
+          path: ./target/release/examsim*
       - name: Run tests
         run: cargo test --verbose
       - name: Run linter
+        if: runner.os != 'macOS'
         run: cargo clippy -- -D warnings
+
+  release:
+    name: Release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Chceckout code
+        uses: actions/checkout@v2
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: examsim-${{ runner.os }}
+          path: ./target/
+      - name: Clean .d files
+        working-directory: ./target/
+        run: |
+          rm *.d
+      - name: Clean .pdb files
+        if: runner.os == 'Windows'
+        working-directory: ./target/
+        run: |
+          rm *.pdb
+      - name: Rename macOS artifacts
+        if: runner.os == 'macOS'
+        working-directory: ./target/
+        run: |
+          mv examsim examsim-macos
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "./target/*"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          draft: true
+          allowUpdates: true
