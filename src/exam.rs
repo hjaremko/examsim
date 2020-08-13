@@ -1,5 +1,6 @@
 use rand::Rng;
 use std::fmt;
+use log::warn;
 
 #[derive(Debug, PartialEq)]
 pub enum Answer {
@@ -44,6 +45,7 @@ impl Question {
 
     pub fn shuffle_answers(&self) {
         // unimplemented!();
+        warn!("Answer shuffling is not yet implemented!");
     }
 }
 

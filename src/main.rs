@@ -38,10 +38,7 @@ fn main() {
     debug!("Source filename: {}", source_file);
 
     let input_stream =
-        // InputStream::new(
-        BufReader::new(File::open(source_file).expect("aa"))
-        ;
-    // );
+        BufReader::new(File::open(source_file).expect("Cannot open source file"));
 
     match parse_exam(input_stream) {
         Ok(exam) => {

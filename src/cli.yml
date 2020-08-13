@@ -1,5 +1,5 @@
 name: examsim
-version: "0.1.0"
+version: "0.1.1"
 author: Hubert Jaremko <hjaremko@outlook.com>
 about: Closed question exam practice
 args:
